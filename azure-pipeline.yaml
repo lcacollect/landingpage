@@ -1,0 +1,45 @@
+trigger:
+  branches:
+    include:
+      - main
+      - stage
+
+
+variables:
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+  # Variables
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  isPR: $[eq(variables['Build.Reason'], 'PullRequest')]
+  workingDirectory: $(System.DefaultWorkingDirectory)
+
+  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+    azureSubscription: 'LCAlanding PROD Storage Account'
+    storageAccount: lcalandingpageprd1
+  ${{ else }}:
+    azureSubscriptionDev: 'LCAlanding DEV Storage Account'
+    storageAccount: lcalandingpagedev1
+
+
+
+
+stages:
+  - stage: Test
+    displayName: Run tests
+    jobs:
+      - task: AzureCLI@2
+        displayName: 'Delete old blob from storage'
+        inputs:
+          azureSubscription: $(azureSubscription)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: az storage blob delete-batch --account-name $(storageAccount) --source "\$web"
+
+      - task: AzureCLI@2
+        displayName: 'Upload new blob to storage'
+        inputs:
+          azureSubscription: $(azureSubscription)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: az storage blob upload-batch --account-name $(parameters.storageAccount) --destination "\$web" --source "$(sourceDirectory)/src"
