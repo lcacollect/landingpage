@@ -47,4 +47,4 @@ stages:
               azureSubscription: $(azureSubscription)
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
-              inlineScript: az storage blob upload-batch --account-name $(parameters.storageAccount) --destination "\$web" --source "$(sourceDirectory)/src"
+              inlineScript: az storage blob upload-batch --account-name $(storageAccount) --destination "\$web" --source "$(workingDirectory)/src"
