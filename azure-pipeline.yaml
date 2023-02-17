@@ -15,10 +15,10 @@ variables:
   workingDirectory: $(System.DefaultWorkingDirectory)
 
   ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-    azureSubscription: 'LCAlanding PROD Storage Account'
+    azureSubscription: 'LCAcollect PROD Storage Account'
     storageAccount: lcalandingpageprd1
   ${{ else }}:
-    azureSubscriptionDev: 'LCAlanding DEV Storage Account'
+    azureSubscriptionDev: 'LCAcollect DEV Storage Account'
     storageAccount: lcalandingpagedev1
 
 
