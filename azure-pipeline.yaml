@@ -25,21 +25,26 @@ variables:
 
 
 stages:
-  - stage: Test
-    displayName: Run tests
+  - stage: buildAndPublish
+    displayName: Publish Landing Page
     jobs:
-      - task: AzureCLI@2
-        displayName: 'Delete old blob from storage'
-        inputs:
-          azureSubscription: $(azureSubscription)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: az storage blob delete-batch --account-name $(storageAccount) --source "\$web"
+      - job: buildAndPublish
+        displayName: Publish Landing Page
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: AzureCLI@2
+            displayName: 'Delete old blob from storage'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: az storage blob delete-batch --account-name $(storageAccount) --source "\$web"
 
-      - task: AzureCLI@2
-        displayName: 'Upload new blob to storage'
-        inputs:
-          azureSubscription: $(azureSubscription)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: az storage blob upload-batch --account-name $(parameters.storageAccount) --destination "\$web" --source "$(sourceDirectory)/src"
+          - task: AzureCLI@2
+            displayName: 'Upload new blob to storage'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: az storage blob upload-batch --account-name $(parameters.storageAccount) --destination "\$web" --source "$(sourceDirectory)/src"
